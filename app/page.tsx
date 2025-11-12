@@ -60,7 +60,7 @@ const IResidenceLanding: React.FC = () => {
     {
       title: "Manage Everything Effortlessly",
       subtitle:
-        "From payments to maintenance tracking — i-Residence keeps your home life organized, secure, and stress-free.",
+        "From payments to maintenance tracking — i-Residence keeps your home life organized, secure and stress-free.",
       cta1: "Download App",
       cta2: "Login",
       image: "/images/handphone.png",
