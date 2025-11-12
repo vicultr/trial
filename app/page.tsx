@@ -5,13 +5,8 @@ import {
   Home,
   CreditCard,
   FileText,
-  CheckCircle,
   Wrench,
-  Bell,
   LogOut,
-  Users,
-  CalendarCheck,
-  ClipboardX,
   Archive,
   MailCheck,
   UserCheck,
@@ -20,15 +15,32 @@ import {
   AtSign,
   Menu,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function IResidenceLanding() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+interface Slide {
+  title: string;
+  subtitle: string;
+  cta1: string;
+  cta2: string;
+  image: string;
+}
 
-  const slides = [
+interface LifestyleCard {
+  icon: React.ReactElement;
+  title: string;
+  description: string;
+}
+
+const IResidenceLanding: React.FC = () => {
+  const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+
+  const slides: Slide[] = [
     {
       title: "Pay | Live | Connect",
       subtitle:
@@ -45,6 +57,14 @@ export default function IResidenceLanding() {
       cta2: "Login",
       image: "/images/tablet.png",
     },
+    {
+      title: "Manage Everything Effortlessly",
+      subtitle:
+        "From payments to maintenance tracking — i-Residence keeps your home life organized, secure, and stress-free.",
+      cta1: "Download App",
+      cta2: "Login",
+      image: "/images/handphone.png",
+    },
   ];
 
   useEffect(() => {
@@ -52,30 +72,12 @@ export default function IResidenceLanding() {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const els = Array.from(document.querySelectorAll("[data-animate]"));
-    if (!("IntersectionObserver" in window)) {
-      els.forEach((el) => el.classList.add("in-view"));
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add("in-view");
-        });
-      },
-      { threshold: 0.15 }
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
+  }, [slides.length]);
 
   const mainColor = "#1a3d4d";
   const accentColor = "#1ba89a";
 
-  const lifestyleCards = [
+  const lifestyleCards: LifestyleCard[] = [
     {
       icon: <CreditCard className="w-10 h-10" />,
       title: "Pay Rent Instantly, Live Stress-Free",
@@ -120,6 +122,10 @@ export default function IResidenceLanding() {
     },
   ];
 
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+  const prevSlide = () =>
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+
   return (
     <div
       className="relative min-h-screen overflow-hidden"
@@ -128,7 +134,7 @@ export default function IResidenceLanding() {
           "linear-gradient(to bottom, #ffffff 0%, #ecfff2 40%, #f6fff9 100%)",
       }}
     >
-      {/* NAVBAR */}
+      {/* ---------- NAVBAR ---------- */}
       <header className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
@@ -138,7 +144,6 @@ export default function IResidenceLanding() {
             </span>
           </div>
 
-          {/* Desktop Navbar */}
           <nav className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
             <a href="#home" className="hover:text-[#1ba89a] transition-colors">
               Home
@@ -169,7 +174,6 @@ export default function IResidenceLanding() {
             </a>
           </nav>
 
-          {/* Desktop Launch App */}
           <Link
             href="https://iresidence.app/"
             target="_blank"
@@ -179,59 +183,53 @@ export default function IResidenceLanding() {
             Launch App
           </Link>
 
-          {/* Mobile Hamburger */}
           <button
             className="md:hidden text-gray-700"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-100">
             <nav className="flex flex-col gap-4 px-6 py-4 text-gray-700 font-medium">
-              <a
-                href="#home"
-                className="hover:text-[#1ba89a] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </a>
-              <a
-                href="#lifestyle"
-                className="hover:text-[#1ba89a] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Lifestyle
-              </a>
-              <a
-                href="#journey"
-                className="hover:text-[#1ba89a] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Start
-              </a>
-              <Link
-                href="/about-us"
-                className="hover:text-[#1ba89a] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                About Us
-              </Link>
-              <a
-                href="#contact-info"
-                className="hover:text-[#1ba89a] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Contact
-              </a>
+              {[
+                ["Home", "#home"],
+                ["Lifestyle", "#lifestyle"],
+                ["Start", "#journey"],
+                ["About Us", "/about-us"],
+                ["Contact", "#contact-info"],
+              ].map(([label, href]) =>
+                href.startsWith("#") ? (
+                  <a
+                    key={href}
+                    href={href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="hover:text-[#1ba89a]"
+                  >
+                    {label}
+                  </a>
+                ) : (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="hover:text-[#1ba89a]"
+                  >
+                    {label}
+                  </Link>
+                )
+              )}
               <Link
                 href="https://iresidence.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-2 bg-[#1ba89a] text-white rounded-full font-semibold hover:opacity-90 transition-opacity text-center"
+                className="px-5 py-2 bg-[#1ba89a] text-white rounded-full font-semibold text-center hover:opacity-90 transition-opacity"
               >
                 Launch App
               </Link>
@@ -240,50 +238,100 @@ export default function IResidenceLanding() {
         )}
       </header>
 
-      {/* HERO SECTION */}
+      {/* ---------- HERO SECTION ---------- */}
       <section
         id="home"
-        className="relative flex flex-col md:flex-row items-center justify-between min-h-screen pt-24 md:pt-32 px-6 md:px-16 overflow-hidden"
+        className="relative flex flex-col md:flex-row items-center justify-between min-h-screen pt-24 md:pt-32 px-4 sm:px-6 md:px-16 overflow-hidden"
       >
-        {/* Left (Text) */}
-        <div className="relative z-20 w-full md:w-1/2 flex flex-col justify-center text-left md:pr-10">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 leading-tight">
-            {slides[currentSlide].title}
-          </h1>
-          <p className="text-lg md:text-2xl text-gray-700 mb-8 leading-relaxed">
-            {slides[currentSlide].subtitle}
-          </p>
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-md hover:bg-white z-30"
+          aria-label="Previous Slide"
+        >
+          <ChevronLeft className="w-6 h-6 text-[#1a3d4d]" />
+        </button>
 
-          <div className="flex flex-wrap gap-4">
-            <button className="px-6 py-3 bg-[#1ba89a] text-white rounded-full font-semibold text-lg hover:opacity-90 transition">
-              {slides[currentSlide].cta1}
-            </button>
-            <a
-              href="https://iresidence.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 border-2 border-[#1ba89a] text-[#1a3d4d] rounded-full font-semibold text-lg hover:bg-[#1ba89a]/10 transition"
-            >
-              {slides[currentSlide].cta2}
-            </a>
-          </div>
-        </div>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-md hover:bg-white z-30"
+          aria-label="Next Slide"
+        >
+          <ChevronRight className="w-6 h-6 text-[#1a3d4d]" />
+        </button>
 
-        {/* Right (Image) */}
-        <div className="relative w-full md:w-1/2 flex justify-center mt-10 md:mt-0">
-          <Image
-            src={slides[currentSlide].image}
-            alt="i-Residence App"
-            width={500}
-            height={500}
-            className="object-contain w-72 sm:w-80 md:w-[500px] h-auto drop-shadow-xl"
-            priority
-          />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide}
+            initial={{ opacity: 0, x: 120 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -120 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="w-full flex flex-col-reverse md:flex-row items-center justify-between gap-10 text-center md:text-left"
+          >
+            {/* Text Section */}
+            <div className="relative z-20 w-full md:w-1/2 flex flex-col justify-center md:pr-10 px-2 sm:px-6 text-center md:text-left mt-6 md:mt-0">
+              <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 leading-tight">
+                {slides[currentSlide].title}
+              </h1>
+              <p className="text-lg md:text-2xl text-gray-700 mb-8 leading-relaxed">
+                {slides[currentSlide].subtitle}
+              </p>
+
+              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                <button className="px-6 py-3 bg-[#1ba89a] text-white rounded-full font-semibold text-lg hover:opacity-90 transition">
+                  {slides[currentSlide].cta1}
+                </button>
+                <a
+                  href="https://iresidence.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 border-2 border-[#1ba89a] text-[#1a3d4d] rounded-full font-semibold text-lg hover:bg-[#1ba89a]/10 transition"
+                >
+                  {slides[currentSlide].cta2}
+                </a>
+              </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="relative w-full md:w-1/2 flex justify-center mt-6 md:mt-0">
+              <motion.div
+                key={slides[currentSlide].image}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.8 }}
+              >
+                <Image
+                  src={slides[currentSlide].image}
+                  alt={slides[currentSlide].title}
+                  width={500}
+                  height={500}
+                  className="object-contain w-64 sm:w-72 md:w-[500px] h-auto drop-shadow-xl"
+                  priority
+                />
+              </motion.div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentSlide(i)}
+              className={`w-3 h-3 rounded-full transition-all ${
+                currentSlide === i
+                  ? "bg-[#1ba89a] w-6"
+                  : "bg-gray-300 hover:bg-gray-400"
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
         </div>
       </section>
 
-      {/* LIFESTYLE SECTION */}
-      <section id="lifestyle" className="py-20 px-6 bg-gray-50" data-animate>
+      {/* ---------- LIFESTYLE SECTION ---------- */}
+      <section id="lifestyle" className="py-20 px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto text-center">
           <h2
             className="text-4xl md:text-5xl font-bold mb-12"
@@ -302,7 +350,7 @@ export default function IResidenceLanding() {
                   className="inline-flex items-center justify-center w-12 h-12 rounded-lg mb-3"
                   style={{ background: `${accentColor}11` }}
                 >
-                  {React.cloneElement(item.icon, { style: { color: mainColor } })}
+                  {React.cloneElement(item.icon, { style: { color: mainColor } } as any)}
                 </div>
                 <h3
                   className="text-xl md:text-2xl font-semibold"
@@ -317,18 +365,21 @@ export default function IResidenceLanding() {
         </div>
       </section>
 
-      {/* START YOUR PREMIUM LIVING SECTION */}
+      {/* ---------- JOURNEY SECTION ---------- */}
       <section
         id="journey"
         className="py-20 px-6 bg-[#eaf8f7] flex flex-col md:flex-row items-center justify-center gap-10 max-w-7xl mx-auto rounded-3xl shadow-lg"
-        data-animate
       >
         <div className="md:w-1/2 flex flex-col gap-6">
-          <h2 className="text-4xl md:text-5xl font-bold" style={{ color: mainColor }}>
+          <h2
+            className="text-4xl md:text-5xl font-bold"
+            style={{ color: mainColor }}
+          >
             Start Your Premium Living Journey Today
           </h2>
           <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-            Pay rent. Track your records. Book visitors. Move in or move out, all from one app.
+            Pay rent. Track your records. Book visitors. Move in or move out, all
+            from one app.
             <br />
             Experience the high standard of i-Residence today.
           </p>
@@ -351,15 +402,10 @@ export default function IResidenceLanding() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer
-        id="contact-info"
-        className="bg-[#1a3d4d] text-white py-16 px-6 mt-20"
-        data-animate
-      >
+      {/* ---------- FOOTER ---------- */}
+      <footer id="contact-info" className="bg-[#1a3d4d] text-white py-16 px-6 mt-20">
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-6 text-center">
           <h3 className="text-2xl font-semibold mb-4">Contact Page</h3>
-
           <div className="flex flex-col gap-2 text-lg">
             <div className="flex items-center gap-2 justify-center">
               <AtSign className="w-5 h-5" />
@@ -383,25 +429,11 @@ export default function IResidenceLanding() {
         </div>
       </footer>
 
-      {/* RIGHTS RESERVED */}
       <section className="bg-[#15303c] text-white py-4 text-center">
         &copy; {new Date().getFullYear()} i-Residence. All rights reserved.
       </section>
-
-      <style jsx>{`
-        html {
-          scroll-behavior: smooth;
-        }
-        [data-animate] {
-          opacity: 0;
-          transform: translateY(18px);
-          transition: opacity 700ms ease, transform 700ms ease;
-        }
-        [data-animate].in-view {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      `}</style>
     </div>
   );
-}
+};
+
+export default IResidenceLanding;
