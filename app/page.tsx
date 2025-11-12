@@ -240,56 +240,46 @@ export default function IResidenceLanding() {
         )}
       </header>
 
-      {/* HERO SLIDER */}
-      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-        <div
-          className="flex transition-transform duration-1000 ease-in-out h-full w-full"
-          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-        >
-          {slides.map((slide, index) => (
-            <div
-              key={index}
-              className="min-w-full h-screen relative flex items-center"
+      {/* HERO SECTION */}
+      <section
+        id="home"
+        className="relative flex flex-col md:flex-row items-center justify-between min-h-screen pt-24 md:pt-32 px-6 md:px-16 overflow-hidden"
+      >
+        {/* Left (Text) */}
+        <div className="relative z-20 w-full md:w-1/2 flex flex-col justify-center text-left md:pr-10">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 leading-tight">
+            {slides[currentSlide].title}
+          </h1>
+          <p className="text-lg md:text-2xl text-gray-700 mb-8 leading-relaxed">
+            {slides[currentSlide].subtitle}
+          </p>
+
+          <div className="flex flex-wrap gap-4">
+            <button className="px-6 py-3 bg-[#1ba89a] text-white rounded-full font-semibold text-lg hover:opacity-90 transition">
+              {slides[currentSlide].cta1}
+            </button>
+            <a
+              href="https://iresidence.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 border-2 border-[#1ba89a] text-[#1a3d4d] rounded-full font-semibold text-lg hover:bg-[#1ba89a]/10 transition"
             >
-              <div
-                className="absolute inset-0 bg-no-repeat bg-right bg-cover transition-all duration-1000"
-                style={{
-                  backgroundImage: `url(${slide.image})`,
-                  backgroundPosition: "right center",
-                  backgroundSize: "contain",
-                  opacity: 0.98,
-                  filter: "brightness(1) contrast(1.05)",
-                }}
-              ></div>
-
-              <div className="absolute inset-0 bg-gradient-to-l from-white/30 via-white/10 to-transparent"></div>
-
-              <div className="relative z-20 max-w-2xl px-6 md:px-16 py-32 md:py-48 text-left">
-                <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 drop-shadow-sm">
-                  {slide.title}
-                </h1>
-                <p className="text-lg md:text-2xl text-gray-700 mb-8 leading-relaxed">
-                  {slide.subtitle}
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <button className="px-6 py-3 bg-[#1ba89a] text-white rounded-full font-semibold text-lg hover:opacity-90 transition">
-                    {slide.cta1}
-                  </button>
-                  <a
-                    href="https://iresidence.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-6 py-3 border-2 border-[#1ba89a] text-[#1a3d4d] rounded-full font-semibold text-lg hover:bg-[#1ba89a]/10 transition"
-                  >
-                    {slide.cta2}
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
+              {slides[currentSlide].cta2}
+            </a>
+          </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#f6fff9] to-transparent z-10"></div>
+        {/* Right (Image) */}
+        <div className="relative w-full md:w-1/2 flex justify-center mt-10 md:mt-0">
+          <Image
+            src={slides[currentSlide].image}
+            alt="i-Residence App"
+            width={500}
+            height={500}
+            className="object-contain w-72 sm:w-80 md:w-[500px] h-auto drop-shadow-xl"
+            priority
+          />
+        </div>
       </section>
 
       {/* LIFESTYLE SECTION */}
