@@ -405,7 +405,7 @@ const IResidenceLanding: React.FC = () => {
       {/* ---------- FOOTER ---------- */}
       <footer id="contact-info" className="bg-[#1a3d4d] text-white py-16 px-6 mt-20">
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-6 text-center">
-          <h3 className="text-2xl font-semibold mb-4">Contact Page</h3>
+          <h3 className="text-2xl font-semibold mb-4">Contact </h3>
           <div className="flex flex-col gap-2 text-lg">
             <div className="flex items-center gap-2 justify-center">
               <AtSign className="w-5 h-5" />
